@@ -7,17 +7,18 @@
 
 //  - HH:MM::SS AM/PM (Eg 01:45:23 PM)
 
-let counter1 = () => {
-    // let count = new Date().toISOString();
-    let count = new Date(SECONDS * 1000).toISOString().substring(11, 16);
-    // console.log(`${count.getHours()}:${count.getMinutes()}:${count.getSeconds()}`);
-    console.log(count);
-    // setInterval(()=>{
-
-    //     console.clear();
-    //     console.log(count);
-    //     count++;
-    // }, 1000)
+let getTime = ()=>{
+    console.clear();
+    let currDate = new Date()
+    let hours = currDate.getHours();
+    hours = hours%12
+    let minutes = currDate.getMinutes();
+    let seconds = currDate.getSeconds();
+    let ampm =   hours >= 12 ? 'pm' : 'am';
+    console.log(hours, minutes, seconds, ampm);
+    setInterval(getTime, 1000)
 }
 
-counter1();
+getTime()
+
+
