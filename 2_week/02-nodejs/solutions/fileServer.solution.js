@@ -14,7 +14,7 @@
 
     - For any other route not defined in the server return 404
 
-    Testing the server - run `npm run test-fileServer` command in terminal
+    Testing the server - run `npx jest ./tests/fileServer.test.js`` command in terminal
  */
 const express = require('express');
 const fs = require('fs');

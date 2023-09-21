@@ -45,15 +45,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 let app = express();
-port = 3000;
+port = 3001;
 
 app.use(bodyParser.json())
 
-let todos = [];
+const todos = [];
 
 function findIndex(id, arr){
   for(let i = 0; i<arr.length; i++){
-    console.log("id =", id);
     if(arr[i].id == id) return i;
   }
   return -1;
@@ -80,7 +79,7 @@ app.post("/todos", (req, res) => {
   }
   todos.push(newTodo);
 
-  res.status(200).json(newTodo);
+  res.status(201).json(newTodo);
 })
 
 app.put("/todos/:id", (req, res) => {
