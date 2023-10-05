@@ -41,71 +41,82 @@
   npx jest ./tests/todoServer.test.js
  */
 
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
 let app = express();
-port = 3001;
+const port = 3000;
 
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
-const todos = [];
+let todos = [];
 
 function findIndex(id, arr){
-  for(let i = 0; i<arr.length; i++){
-    if(arr[i].id == id) return i;
-  }
-  return -1;
+    for(let i = 0; i<arr.length; i++){
+        if(arr[i].id === id) return i;
+    }
+    return -1;
 }
 
-app.get("/todos" , (req, res) => {
+app.get('/test', (req, res) => {
+    res.send("test route, server is running successfully")
+})
 
-  res.status(200).json(todos);
-});
+app.get("/todos", (req, res) => {
+    res.json(todos);
+})
 
 app.get("/todos/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const todoIndex = findIndex(id, todos);
-  if(todoIndex === -1) res.status(404).send();
-  else res.status(200).json(todos[todoIndex]);
-
+    const id = parseInt(req.params.id);
+    const index = findIndex(id, todos);
+    if(index === -1){
+        res.status(404).send(`Error! ${id} do not exists.`)
+    }else{
+        res.json(todos[index]);
+    }
 })
 
 app.post("/todos", (req, res) => {
-  const newTodo = {
-    id: Math.floor(Math.random()*1000000),
-    title: req.body.title,
-    description: req.body.description
-  }
-  todos.push(newTodo);
-
-  res.status(201).json(newTodo);
+    const newtodo = {
+        id: Math.floor(Math.random()*10000000),
+        title: req.body.title,
+        description: req.body.description
+    }
+    todos.push(newtodo);
+    res.status(201).json(newtodo);
+    
 })
 
 app.put("/todos/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const todoIndex = findIndex(id, todos);
-  if(todoIndex === -1) res.status(404).send();
-  else{
-    todos[todoIndex].title = req.body.title;
-    todos[todoIndex].description = req.body.description;
-    res.status(200).json(todos[todoIndex]);
-  }
+    const id = parseInt(req.params.id);
+    const index = findIndex(id, todos);
+    if(index === -1){
+        res.status(404).send(`Error! ${id} do not exists.`)
+    }else{
+        todos[index].title = req.body.title;
+        todos[index].description = req.body.description;
+        res.json(todos[index]);
+    }
 })
 
 app.delete("/todos/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const todoIndex = findIndex(id, todos);
-  if(todoIndex === -1) res.status(404).send();
-  else{
-    let removed = todos.splice(todoIndex, 1)
-    res.status(200).json(removed);
-  } 
-})
-1, 2, 
-
-app.listen(port, 'localhost', ()=>{
-  console.log(`Sever Started\napp Listening on port ${port}`);
+    const id = parseInt(req.params.id);
+    const index = findIndex(id, todos);
+    if(index === -1){
+        res.status(404).send(`Error! ${id} do not exists.`);
+    }else{
+        const deletedTodo = todos.splice(index, 1);
+        res.json(deletedTodo);
+    }
 })
 
-module.exports = app;
+app.listen(port, "localhost", ()=>{
+    console.log(`server is running on port ${port}`);
+})
+
+
+
+// app.use(bodyParser.json())
+// "/todos/:id"
+// arr[i].id === id;
