@@ -19,7 +19,7 @@
   3. POST /todos - Create a new todo item
     Description: Creates a new todo item.
     Request Body: JSON object representing the todo item.
-    Response: 201 Created with the ID of the created todo item in JSON format. eg: {id: 1}
+    Response: 201 Created with the ID of the created todo item in JSON format. eg: {id: 1} 
     Example: POST http://localhost:3000/todos
     Request Body: { "title": "Buy groceries", "completed": false, description: "I should buy groceries" }
     
@@ -43,14 +43,16 @@
 
 
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path')
 
 let app = express();
 const port = 3000;
 
-app.use(bodyParser.json());
+app.use(express.json());
 
-let todos = [];
+const filePath = path.join(__dirname, "todos.json");
 
 function findIndex(id, arr){
     for(let i = 0; i<arr.length; i++){
@@ -64,17 +66,30 @@ app.get('/test', (req, res) => {
 })
 
 app.get("/todos", (req, res) => {
-    res.json(todos);
+    fs.readFile(filePath, "utf-8", (err, data) => {
+        if(err) throw err;
+        else{
+            const todos = JSON.parse(data)
+            res.json(todos);
+        }
+    })
 })
 
 app.get("/todos/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = findIndex(id, todos);
-    if(index === -1){
-        res.status(404).send(`Error! ${id} do not exists.`)
-    }else{
-        res.json(todos[index]);
-    }
+    fs.readFile(filePath, "utf-8", (err, data) => {
+        if(err) throw err;
+        else{
+            const todos = JSON.parse(data)
+
+            const id = parseInt(req.params.id);
+            const index = findIndex(id, todos);
+            if(index === -1){
+                res.status(404).send(`Error! ${id} do not exists.`)
+            }else{
+                res.json(todos[index]);
+            }
+        }
+    })
 })
 
 app.post("/todos", (req, res) => {
@@ -82,34 +97,80 @@ app.post("/todos", (req, res) => {
         id: Math.floor(Math.random()*10000000),
         title: req.body.title,
         description: req.body.description
-    }
-    todos.push(newtodo);
-    res.status(201).json(newtodo);
+    };
+
+    fs.readFile(filePath, "utf-8", (err, data) => {
+        if(err) throw err;
+        else{
+            const todos = JSON.parse(data)
+            todos.push(newtodo);
+            fs.writeFile(filePath, JSON.stringify(todos), 'utf-8', (err) => {
+                if(err) res.status(500).send(err);
+            })
+            res.status(201).json(newtodo);
+        }
+    });
+
+
     
 })
 
 app.put("/todos/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = findIndex(id, todos);
-    if(index === -1){
-        res.status(404).send(`Error! ${id} do not exists.`)
-    }else{
-        todos[index].title = req.body.title;
-        todos[index].description = req.body.description;
-        res.json(todos[index]);
-    }
+
+    fs.readFile(filePath, "utf-8", (err, data) => {
+        if(err) throw err;
+        else{
+            const todos = JSON.parse(data)
+
+            const id = parseInt(req.params.id);
+            const index = findIndex(id, todos);
+            if(index === -1){
+                res.status(404).send(`Error! ${id} do not exists.`)
+            }else{
+                todos[index].title = req.body.title;
+                todos[index].description = req.body.description;
+
+                fs.writeFile(filePath, JSON.stringify(todos), 'utf-8', (err) => {
+                    if(err) throw err;
+                })
+                res.json(todos[index]);
+            }
+
+        }
+    })
+
+
 })
 
 app.delete("/todos/:id", (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = findIndex(id, todos);
-    if(index === -1){
-        res.status(404).send(`Error! ${id} do not exists.`);
-    }else{
-        const deletedTodo = todos.splice(index, 1);
-        res.json(deletedTodo);
-    }
+
+    fs.readFile(filePath, "utf-8", (err, data) => {
+        if(err) throw err;
+        else{
+            const todos = JSON.parse(data)
+
+            const id = parseInt(req.params.id);
+            const index = findIndex(id, todos);
+            if(index === -1){
+                res.status(404).send(`Error! ${id} do not exists.`)
+            }else{
+                const deletedTodo = todos.splice(index, 1);
+
+                fs.writeFile(filePath, JSON.stringify(todos), 'utf-8', (err) => {
+                    if(err) res.status(500).send(err);
+                })
+
+                res.json(deletedTodo);
+            }
+        }
+    })
 })
+
+// this should be above remaining middlewares
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+})
+
 
 app.listen(port, "localhost", ()=>{
     console.log(`server is running on port ${port}`);
@@ -120,3 +181,14 @@ app.listen(port, "localhost", ()=>{
 // app.use(bodyParser.json())
 // "/todos/:id"
 // arr[i].id === id;
+// todos.json should have id in numbers too
+// bodyParser is bundeled with express now, no need to import it app.use(bodyParser.json()) ----> app.use(express.json())
+
+
+// for testing if you want your backend to ignore cors => 
+// npm install cors
+// const cors = require("cors")
+// app.use(cors()) // below app.use(express.json())
+
+
+// home work -> try to send the get for all the todos request when the website loads

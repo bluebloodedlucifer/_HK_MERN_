@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+</head>
+<body>
+    Todo title
+    <input type="text" name="title" id="title">
+    <br>
+    <br>
+    Todo description
+    <input type="text" name="description" id="description">
+    <button onclick="postTodo()">send todo</button>
+    <br>
+    <br>
+    <div id="mainArea">
+        <b>My todos</b>
+    </div>
+
+    <script>
+
+        function deleteTodo(id){
+            console.log(id);
+            fetch(`http://localhost:3000/todos/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => {
+                const child = document.getElementById(`${res.id}`);
+
+                child.parentElement.remove();
+
+            })
+        }
+
+        function getTodos(){
+            fetch("http://localhost:3000/todos", {
+                method: "GET"
+            }).then(res => {
+                res.json().then((data => {
+                    // console.log(data);
+                    let mainArea = document.getElementById("mainArea");
+
+                    for(let i = 0; i<data.length; i++){
+                        let childElement = document.createElement("div");
+                        // childElement.innerHTML = data[i].title;
+                        let grandChildElement1 = document.createElement("span");
+                        grandChildElement1.innerHTML = data[i].title;
+                        
+
+                        let grandChildElement2= document.createElement("span");
+                        grandChildElement2.innerHTML = data[i].description;
+                        
+
+                        let grandChildElement3 = document.createElement("button");
+                        grandChildElement3.innerHTML = "Delete";
+                        grandChildElement3.setAttribute("onClick", `deleteTodo(${data[i].id})`)
+
+                        childElement.appendChild(grandChildElement1);
+                        childElement.appendChild(grandChildElement2);
+                        childElement.appendChild(grandChildElement3);
+
+                        mainArea.appendChild(childElement);
+                    }
+                    // mainArea.innerHTML = JSON.stringify(data);
+
+                }))
+            });
+        }
+
+        function postTodo(){
+            fetch("http://localhost:3000/todos", {
+                method: "POST",
+                body: JSON.stringify({
+                    title: document.getElementById("title").value, 
+                    description: document.getElementById("description").value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => {
+                res.json().then((data => {
+                    console.log(data);
+
+                    let childElement = document.createElement("div");
+                    // childElement.innerHTML = data[i].title;
+                    let grandChildElement1 = document.createElement("span");
+                    grandChildElement1.innerHTML = data.title;
+                    
+
+                    let grandChildElement2= document.createElement("span");
+                    grandChildElement2.innerHTML = data.description;
+                    
+
+                    let grandChildElement3 = document.createElement("button");
+                    grandChildElement3.innerHTML = "Delete";
+
+                    childElement.appendChild(grandChildElement1);
+                    childElement.appendChild(grandChildElement2);
+                    childElement.appendChild(grandChildElement3);
+
+                    mainArea.appendChild(childElement);
+                }))
+            })
+        }
+        getTodos()
+    </script>
+</body>
+</html>
+
+
+<!-- Single App
+Todo https://todomvc.com/examples/typescript-react/#/
+Stopwatch (Alarm, rapidly update UI)
+Splitwise
+Jwt or session based / 
+Multiuser -->
