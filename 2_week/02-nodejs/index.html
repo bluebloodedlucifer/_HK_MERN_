@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,16 +22,22 @@
     <script>
 
         function deleteTodo(id){
-            console.log(id);
             fetch(`http://localhost:3000/todos/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 }
             }).then(res => {
-                const child = document.getElementById(`${res.id}`);
+                res.json().then(data => {
+                    console.log(data);
+                    console.log(id);
+                    let parent = document.getElementById(`${id}`).parentElement
+                    parent.remove()
+                    // let child = document.getElementById(`${data.id}`);
 
-                child.parentElement.remove();
+                    // parent.remove();
+
+                })
 
             })
         }
@@ -46,7 +52,7 @@
 
                     for(let i = 0; i<data.length; i++){
                         let childElement = document.createElement("div");
-                        // childElement.innerHTML = data[i].title;
+                        // childElement.innerHTML = data[i].title; 
                         let grandChildElement1 = document.createElement("span");
                         grandChildElement1.innerHTML = data[i].title;
                         
@@ -57,6 +63,7 @@
 
                         let grandChildElement3 = document.createElement("button");
                         grandChildElement3.innerHTML = "Delete";
+                        grandChildElement3.setAttribute("id", `${data[i].id}`)
                         grandChildElement3.setAttribute("onClick", `deleteTodo(${data[i].id})`)
 
                         childElement.appendChild(grandChildElement1);
@@ -97,6 +104,8 @@
 
                     let grandChildElement3 = document.createElement("button");
                     grandChildElement3.innerHTML = "Delete";
+                    grandChildElement3.setAttribute("id", `${data.id}`)
+                    grandChildElement3.setAttribute("onClick", `deleteTodo(${data.id})`)
 
                     childElement.appendChild(grandChildElement1);
                     childElement.appendChild(grandChildElement2);
@@ -109,7 +118,7 @@
         getTodos()
     </script>
 </body>
-</html>
+</html> -->
 
 
 <!-- Single App
@@ -118,3 +127,70 @@ Stopwatch (Alarm, rapidly update UI)
 Splitwise
 Jwt or session based / 
 Multiuser -->
+
+
+<!-- --------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!-- Reconcilers -->
+
+<!-- 
+    Now to the above way was the de facto of writing front end until 2014
+    React Introduced Reconsilers feature and changed everything
+
+    Reconsilers are basically functions which takes care of rendering (Adding/Deleting/Updating) of the DOM by keeping an eye on the state of the things rendering on a webpage
+    Reconsilers take the update of the state and translate that to the DOM by using appendChild(), removeChild(), createElement() under the hood
+    in our case the single variable which is changing is "todos" array
+    
+ -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+ </head>
+ <body>
+    <div id="mainArea"></div>
+    
+    <script>
+        function createDomElements (data){
+            let mainArea = document.getElementById("mainArea");
+            // mainArea.innerHTML = "";
+
+            for(let i = 0; i<data.length; i++){
+                let childElement = document.createElement("div");
+                // childElement.innerHTML = data[i].title; 
+                let grandChildElement1 = document.createElement("span");
+                grandChildElement1.innerHTML = data[i].title;
+                
+
+                let grandChildElement2= document.createElement("span");
+                grandChildElement2.innerHTML = data[i].description;
+                
+
+                let grandChildElement3 = document.createElement("button");
+                grandChildElement3.innerHTML = "Delete";
+                grandChildElement3.setAttribute("id", `${data[i].id}`)
+                grandChildElement3.setAttribute("onClick", `deleteTodo(${data[i].id})`)
+
+                childElement.appendChild(grandChildElement1);
+                childElement.appendChild(grandChildElement2);
+                childElement.appendChild(grandChildElement3);
+
+                mainArea.appendChild(childElement);
+            }
+        }
+        let todos = [
+            {
+                id: 1,
+                title: "test title",
+                description: "test description"
+            }
+        ]
+
+        window.setInterval(() => {
+            createDomElements(todos);
+        }, 3000)
+    </script>
+ </body>
+ </html>
