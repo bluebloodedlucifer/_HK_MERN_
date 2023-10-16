@@ -155,7 +155,7 @@ Multiuser -->
     <script>
         function createDomElements (data){
             let mainArea = document.getElementById("mainArea");
-            // mainArea.innerHTML = "";
+            mainArea.innerHTML = "";
 
             for(let i = 0; i<data.length; i++){
                 let childElement = document.createElement("div");
@@ -180,17 +180,54 @@ Multiuser -->
                 mainArea.appendChild(childElement);
             }
         }
-        let todos = [
-            {
-                id: 1,
-                title: "test title",
-                description: "test description"
-            }
-        ]
+        // let todos = [
+        //     {
+        //         id: 1,
+        //         title: "test title",
+        //         description: "test description"
+        //     }
+        // ]
 
         window.setInterval(() => {
-            createDomElements(todos);
-        }, 3000)
+            let todos = [];
+            // todo is the state variable
+            for(let i = 0; i<Math.floor(Math.random() * 100); i++){
+                todos.push({
+                    id: i+1,
+                    title: "test title",
+                    description: "test description"
+                })
+            }
+
+            createDomElements(todos); // this takes care of the rendering logic automatically, we just need to provide it the latest state of todo;
+            // => we only need to take care of the variable state and rendering logic is automaticall handeled , similar thing happens in the react too
+
+            // react compares the two states and updates the states by calculating the difference between two states
+
+
+        }, 3000);
+
+            // complete state of any app can be defined in an JS object, containing various variables 
+            //eg.
+
+
+            let fb= {
+                profilePicture: "url.com here",
+                    name: "Aryan",
+                    posts: [
+                        {
+                            id: 1,
+                            person: {
+                                name: "Annu",
+                                profilePicture
+                            }
+                        }
+                    ]
+
+            };
     </script>
  </body>
  </html>
+
+
+ <!-- Build a reconciler that compares the two states and only updates the difference on the DOM efficiently -->
