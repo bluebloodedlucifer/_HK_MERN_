@@ -67,6 +67,8 @@ app.get('/admin/courses', adminAuthentication, (req, res) => {
   res.json({ courses: COURSES });
 });
 
+// ------------------------------------------------------------------------------------------------------------------------------------
+
 app.post('/users/signup', (req, res) => {
   // const user = {...req.body, purchasedCourses: []};
   const user = {
