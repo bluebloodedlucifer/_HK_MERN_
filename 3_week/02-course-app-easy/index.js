@@ -59,7 +59,7 @@ app.post('/admin/signup', (req, res) => {
   }
 
   const admin = ADMINS.find(a => a.username === newAdmin.username);
-  if(admin) res.status(409).send("Admin with this username already Exists");
+  if(admin) res.status(409).json({message: "Admin with this username already Exists"});
   else{
     ADMINS.push(newAdmin)
     res.json({
@@ -154,7 +154,7 @@ app.post('/users/courses/:courseId', userAuth, (req, res) => {
   const id = parseInt(req.params.courseId);
   const course = COURSES.find(a => a.id === id && a.published);
   if(course){
-    req.user.purchasedCourses.push(course);
+    req.user.purchasedCourses.push(id);
     res.json({message: "Course purchased successfully"});
   }else res.status(404).json({message: "course with this id doesn't exits"});
 
@@ -165,7 +165,8 @@ app.get('/users/purchasedCourses', userAuth, (req, res) => {
   // const {username} = req.headers;
 
   // const user = USERS.find(u => u.username === username);
-  res.json(req.user.purchasedCourses);
+  const purchasedCourses = COURSES.filter(c => req.user.purchasedCourses.includes(c.id));
+  res.json({courses: purchasedCourses});
 });
 
 app.listen(3000, () => {
